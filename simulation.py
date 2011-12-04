@@ -36,6 +36,16 @@ class Simulation():
         plt.show()
         return True
     
+    @staticmethod
+    def __color(node):
+        state = node[1]['state']
+        return {
+            0: "blue",
+            1: "red",
+            2: "black",
+            3: "green"}[state]
+            
+    
     
     def __update_graph(self):
         """ Runs after each step in the simulation
@@ -45,10 +55,9 @@ class Simulation():
         nx.draw_networkx(self.g, 
                          pos={node[0]: node[1]['pos'] for node in nodes},
                          with_labels=True,
-                         node_color = ["black" if node[1]['active'] else "red" for node in nodes]
+                         node_color = [Simulation.__color(node) for node in nodes]
                         )
         plt.draw()
-                
 
 
 if __name__ == '__main__':

@@ -11,6 +11,9 @@ class MeshGraph(nx.Graph):
     """ A graph representing a Wireless Mesh Network
     """
     
+    PASSIVE = 0
+    ACTIVE = 1
+    
     def __init__(self, n_rows, n_cols, row_dist, col_dist, max_offset=0):
         """ Creates a approximatly square mesh. Randomness factor prevents
             the graph from being perfectly square
@@ -30,10 +33,9 @@ class MeshGraph(nx.Graph):
                 x_off = (random() - 0.5) * 2*max_offset
                 y_off = (random() - 0.5) * 2*max_offset
                 pos = (col_dist*(i+x_off) , row_dist*(n_rows-j+y_off))
-                self.add_node(v, pos=pos, active=False)
-                self.add_edge(v, self.get_node(i-1, j)) if not i==0 else None
-                self.add_edge(v, self.get_node(i, j-1)) if not j==0 else None
-        print self.node
+                self.add_node(v, pos=pos, state=MeshGraph.PASSIVE)
+                if not i==0: self.add_edge(v, self.get_node(i-1, j))
+                if not j==0: self.add_edge(v, self.get_node(i, j-1))
     
     
     def get_node(self, x, y):
@@ -51,9 +53,7 @@ class MeshGraph(nx.Graph):
             @return: (boolean) True if node was activated, False is
                 node was already active
         """
-        prev_state = self.node[node]['active']
-        self.node[node]['active'] = True
-        return True if prev_state == False else True
+        return self.__set_state(node, MeshGraph.ACTIVE)
         
     def deactivate_node(self, node):
         """ Deactivates a given node (abstract -- represented a different
@@ -61,7 +61,9 @@ class MeshGraph(nx.Graph):
             @return: (boolean) True if node was deactivated, False is
                 node was already deactive
         """
-        prev_state = self.node[node]['active']
-        self.node[node]['active'] = False
-        return True if prev_state == True else False
+        return self.__set_state(node, MeshGraph.PASSIVE)
     
+    def __set_state(self, node, state):
+        prev_state = self.node[node]['state']
+        self.node[node]['state'] = state
+        return True if prev_state != state else False
