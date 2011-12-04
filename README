@@ -1,3 +1,5 @@
 Python packages you will need to install:
 - matplotlib
 - networkx
+
+To see a sample simulation, run the simulation script.
