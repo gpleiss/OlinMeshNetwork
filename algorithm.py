@@ -19,7 +19,6 @@ class Algorithm():
         """
         self.g = g
         self.__nodes = self.g.nodes()
-        self.__nodes.sort()
         self.__i = 0
         
     def has_next_step(self):

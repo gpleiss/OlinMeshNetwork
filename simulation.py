@@ -7,6 +7,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from meshgraph import MeshGraph
 from algorithm import Algorithm
+from ahodv import Ahodv
+import time
     
     
 class Simulation():
@@ -30,6 +32,7 @@ class Simulation():
             @return: True if the simulation runs successfully
         """
         plt.ion()
+        self.__update_graph()
         while self.algo.has_next_step():
             self.algo.next_step()
             self.__update_graph()
@@ -58,9 +61,10 @@ class Simulation():
                          node_color = [Simulation.__color(node) for node in nodes]
                         )
         plt.draw()
+        time.sleep(1)
 
 
 if __name__ == '__main__':
-    g = MeshGraph(n_rows=5, n_cols=6, row_dist=2, col_dist=1, max_offset=0.25)
-    s = Simulation(g, Algorithm)
+    g = MeshGraph(n_rows=7, n_cols=7, row_dist=2, col_dist=1, max_offset=0.25)
+    s = Simulation(g, Ahodv)
     s.start()
