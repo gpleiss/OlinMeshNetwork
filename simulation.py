@@ -26,7 +26,7 @@ class Simulation():
         if not isinstance(self.algo, Algorithm): 
             raise Exception("Algo must be a subclass of Algorithm")
             
-		
+
     def start(self):
         """ Start the simulation
             @return: True if the simulation runs successfully

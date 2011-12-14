@@ -21,24 +21,10 @@ class DSRalgorithm(Algorithm):
         '''
         Algorithm.__init__(self, g)
         self.table = {}        
-        
-    
-    def has_next_step(self):
-        return True
-    
-    def next_step(self):
-        Algorithm.next_step(self)
-        (o,d) = self.get_origin_and_dest()
-            
-        (path, transmissions) = self.xmit_info(o, d)
-        if path != None:
-            [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
-        print "Origin: ", o, ", Destination: ", d,
-        print ", tramsissions: ", transmissions
 
             
             
-    def xmit_info(self, origin, dest):
+    def xmit_msg(self, origin, dest):
         
         # Flood network if path not in table, otherwise get path from table
         if self.table.get((origin, dest), None) == None:
@@ -67,7 +53,7 @@ class DSRalgorithm(Algorithm):
         # the network
         else:
             self.table.pop((origin, dest))
-            return self.xmit_info(origin, dest)
+            return self.xmit_msg(origin, dest)
     
     
     
