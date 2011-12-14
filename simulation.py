@@ -23,7 +23,6 @@ class Simulation():
         """
         self.g = g
         self.algo = Algo(g)
-        self.num_hop_list = list()
         if not isinstance(self.algo, Algorithm): 
             raise Exception("Algo must be a subclass of Algorithm")
             
@@ -46,12 +45,9 @@ class Simulation():
         """
         plt.ion()
         self.__update_graph()
-        for i in range(2):
-            while self.algo.has_next_step():
-                self.algo.next_step()
-                self.__update_graph()
-            self.num_hop_list.append(self.algo.get_num_hops())
-            self.algo.create_new_packet()
+        while self.algo.has_next_step():
+            self.algo.next_step()
+            self.__update_graph()
         plt.show()
         print(self.num_hop_list)
         return True
