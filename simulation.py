@@ -54,6 +54,7 @@ class Simulation():
         """ Runs after each step in the simulation
             Make the graph display changes as a result of the algorithm
         """
+        plt.cla()
         nodes = self.g.nodes(data=True)
         nx.draw_networkx(self.g, 
                          pos={node[0]: node[1]['pos'] for node in nodes},
@@ -65,6 +66,6 @@ class Simulation():
 
 
 if __name__ == '__main__':
-    g = MeshGraph(n_rows=7, n_cols=7, row_dist=2, col_dist=1, max_offset=0.25)
+    g = MeshGraph(n_rows=5, n_cols=5, row_dist=1, col_dist=1, max_offset=0.25)
     s = Simulation(g, DSRalgorithm)
     s.start()
