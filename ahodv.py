@@ -7,6 +7,7 @@ from algorithm import Algorithm
 from meshgraph import MeshGraph
 from random import randint
 from collections import deque
+from packet import Packet
 
 class Ahodv(Algorithm):
     
@@ -28,6 +29,7 @@ class Ahodv(Algorithm):
         return True
     
     def next_step(self):
+        
         # If destination node has been found, retrace back path to root
         if len(self.__path) > 0:
             prev_node = self.__cnct_by.get(self.__path[0], None)
@@ -36,9 +38,7 @@ class Ahodv(Algorithm):
                 self.__path.appendleft(prev_node)
         
         # Have nodes propagate back once path has been established
-        i = 0
         for node in self.g.nodes_with_state(MeshGraph.SENDING):
-            i = i + 1
             for adj_node in self.g.neighbors(node):
                 if self.g.get_node_state(adj_node) == MeshGraph.PASSIVE:
                     if adj_node == self.g.dest:
@@ -50,16 +50,16 @@ class Ahodv(Algorithm):
                     self.__cnct_by[adj_node] = node
             self.g.set_node_state(node, MeshGraph.CNCTD)
             
-        print(i)
-            
         # Time out nodes that have been around for too long
-        for node in self.g.nodes_with_state(MeshGraph.CNCTD):
-            self.g.node[node]['time'] = self.g.node[node].get('time', 0) + 1
-            if self.g.node[node]['time'] >= self.timeout:
-                self.g.set_node_state(node, MeshGraph.PASSIVE)
-                self.__cnct_by.pop(node, None)
+        # for node in self.g.nodes_with_state(MeshGraph.CNCTD):
+            # self.g.node[node]['time'] = self.g.node[node].get('time', 0) + 1
+            # if self.g.node[node]['time'] >= self.timeout:
+                # self.g.set_node_state(node, MeshGraph.PASSIVE)
+                # self.__cnct_by.pop(node, None)
         
         self.num_hops = self.num_hops + 1
+        # Still need to include hops number?
+        # Only works for single packet
 	
     def get_num_hops(self):
         return self.num_hops
@@ -75,5 +75,3 @@ class Ahodv(Algorithm):
         
         self.g.set_node_state(self.g.root, MeshGraph.SENDING)
         print self.g.dest
-         
-                    
