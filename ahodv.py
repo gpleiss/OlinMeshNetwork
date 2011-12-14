@@ -7,7 +7,6 @@ from algorithm import Algorithm
 from meshgraph import MeshGraph
 from random import randint
 from collections import deque
-from packet import Packet
 
 class Ahodv(Algorithm):
     

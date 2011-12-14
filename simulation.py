@@ -49,7 +49,6 @@ class Simulation():
             self.algo.next_step()
             self.__update_graph()
         plt.show()
-        print(self.num_hop_list)
         return True
     
     @staticmethod
