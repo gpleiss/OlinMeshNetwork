@@ -44,6 +44,10 @@ class Algorithm():
                     self.g.add_edge(node, adj_node) 
                 else: # Adjacent node has been removed from the graph
                     self.removed_nodes[adj_node]['adj_nodes'].append(node)
+                    
+    def get_origin_and_dest(self):
+        return ('A1', 'E5')
+    
         
     def has_next_step(self):
         """ @return: True, if the algorithm is not complete

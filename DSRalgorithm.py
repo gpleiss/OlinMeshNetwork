@@ -28,9 +28,7 @@ class DSRalgorithm(Algorithm):
     
     def next_step(self):
         Algorithm.next_step(self)
-            
-        o = 'A1'
-        d = 'E5'
+        (o,d) = self.get_origin_and_dest()
             
         (path, transmissions) = self.xmit_info(o, d)
         if path != None:
