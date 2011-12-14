@@ -7,7 +7,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from meshgraph import MeshGraph
 from algorithm import Algorithm
-from ahodv import Ahodv
+from DSRalgorithm import DSRalgorithm
 import time
     
     
@@ -66,5 +66,5 @@ class Simulation():
 
 if __name__ == '__main__':
     g = MeshGraph(n_rows=7, n_cols=7, row_dist=2, col_dist=1, max_offset=0.25)
-    s = Simulation(g, Ahodv)
+    s = Simulation(g, DSRalgorithm)
     s.start()
