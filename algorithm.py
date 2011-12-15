@@ -73,6 +73,7 @@ class Algorithm():
             @raise Exception: if the algorithm has no more steps remaining 
         """
         new_data = {}
+        num_repair_trans = 0
         self.time += 1
         [self.g.set_node_state(node, MeshGraph.PASSIVE) for node in self.g.nodes()] 
         
@@ -118,8 +119,11 @@ class Algorithm():
                         
                 
         if self.time % self.MSG_PERIOD == 0:
-            (origin, dest) = self.get_origin_and_dest()
-            (path, trans) = self.xmit_msg(origin, dest)
+            if self.g.nodes().count(origin) == 0:
+                (path, trans) = (None, 0)
+            else:
+                (origin, dest) = self.get_origin_and_dest()
+                (path, trans) = self.xmit_msg(origin, dest)
             print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (origin, dest, trans),
             
             if path != None:
@@ -133,12 +137,11 @@ class Algorithm():
             
         if self.time % self.REPAIR_PERIOD == 0:
             trans = self.repair()
+            num_repair_trans += trans
             print "Repair. Transmissions: %i" % (trans)
                 
                 
-        return new_data
-                
-            
+        return (new_data, num_repair_trans)
                 
                 
                 
@@ -151,6 +154,7 @@ class Algorithm():
                 dest = nodes[randint(0, len(nodes)-1)]
         else: dest = self.g.nodes()[-1]
         return (origin, dest)
+    
     
     def xmit_msg(self, origin, dest):
         return (None, 0) 

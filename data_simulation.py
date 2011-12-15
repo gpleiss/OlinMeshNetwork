@@ -20,11 +20,20 @@ class DataSimulation(simulation.Simulation):
             @return: True if the simulation runs successfully
         """
         i = 0
-        while self.algo.has_next_step() and i < 10000:
-            new_data = self.algo.next_step()
+        max_time = 10000
+        repair_trans = 0
+        new_hist = pmf.Hist()
+        
+        while self.algo.has_next_step() and i < max_time:
+            (new_data, new_repair_trans) = self.algo.next_step()
+            repair_trans += new_repair_trans
             for num_trans, num_occur in zip(new_data.keys(), new_data.values()):
-                self.hist.Incr(num_trans, num_occur)
+                new_hist.Incr(num_trans, num_occur)
             i += 1
+        repair_offset = repair_trans/max_time
+        for (key, val) in zip(new_hist.GetDict().keys(), new_hist.GetDict().values()):
+            self.hist.Incr(key + repair_offset, val)
+        print repair_offset
     
     
     def plot_data(self):
