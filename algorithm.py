@@ -5,6 +5,7 @@ Created on Dec 3, 2011
 '''
 from meshgraph import MeshGraph
 from random import random, randint
+from collections import deque
 
 class Algorithm():
     """ An algorithm to be performed on a MeshGraph.
@@ -21,16 +22,18 @@ class Algorithm():
         """
         self.g = g
         
-        self.MSG_PERIOD = 1
+        self.MSG_PERIOD = 2
         self.REPAIR_PERIOD = 5
         self.DEL_PERIOD = 2
         self.ADD_PERIOD = 2
-        self.RETRY = 3
+        self.RETRY_PERIOD = 1
         
         self.DEL_PROB = .5
         self.ADD_PROB = .5
+        self.MAX_RETRIES = 3
         
         self.removed_nodes = {}
+        self.retry_queue = deque()
         self.time = 0
 
     
@@ -48,32 +51,60 @@ class Algorithm():
         self.time += 1
         [self.g.set_node_state(node, MeshGraph.PASSIVE) for node in self.g.nodes()] 
         
+        
         if self.time % self.MSG_PERIOD == 0:
             (origin, dest) = self.get_origin_and_dest()
             (path, trans) = self.xmit_msg(origin, dest)
+            print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (
+                    origin, dest, trans),
+            
             if path != None:
                 [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
-            print "Message. Origin: ", origin, ", Destination: ", dest,
-            print ", tramsissions: ", trans
+                print "SUCCESS"
+            else:
+                self.retry_queue.append(((origin, dest), 0))
+                print "FAILED"
             
             
         if self.time % self.REPAIR_PERIOD == 0:
             trans = self.repair()
-            print "Repair. Transmissions: ", trans
+            print "Repair. Transmissions: %i" % (trans)
         
         
         if self.time % self.DEL_PERIOD == 0:
-            if random() >= self.DEL_PROB:
+            if random() <= self.DEL_PROB:
                 nodes = self.g.nodes()
                 node = self.remove_node(nodes[randint(1, len(nodes)-2)])
-                print "Deletion. Removed: ", node
+                print "Deletion. Removed: %s" % (node)
 
 
         if self.time % self.ADD_PERIOD == 0:
             n = len(self.removed_nodes.keys())
-            if n > 0 and random() >= self.ADD_PROB:
+            if n > 0 and random() <= self.ADD_PROB:
                 node = self.restore_node(self.removed_nodes.keys()[randint(0, n-1)])
-                print "Add. Added: ", node
+                print "Add. Added: %s" % (node)
+                
+                
+        if self.time % self.RETRY_PERIOD == 0:
+            if len(self.retry_queue) > 0:
+                ((origin, dest), num_retries) = self.retry_queue.popleft()
+                num_retries += 1
+            
+                (path, trans) = self.xmit_msg(origin, dest)
+                print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (
+                        num_retries, origin, dest, trans),
+                
+                if path != None:
+                    [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
+                    print "SUCCESS"
+                else:
+                    if num_retries < self.MAX_RETRIES:
+                        self.retry_queue.append(((origin, dest), num_retries))
+                        print "FAILED"
+                    else:
+                        print "FAILED (no more attempts)"
+                
+            
                 
                 
                 
