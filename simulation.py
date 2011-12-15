@@ -70,5 +70,5 @@ class Simulation():
 
 if __name__ == '__main__':
     g = MeshGraph(n_rows=5, n_cols=5, row_dist=1, col_dist=1, max_offset=0.25)
-    s = Simulation(g, OWNalgorithm)
+    s = Simulation(g, BATMANalgorithm)
     s.start()

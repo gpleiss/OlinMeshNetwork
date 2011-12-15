@@ -142,12 +142,14 @@ class Algorithm():
                 
                 
                 
-    def get_origin_and_dest(self, rand_origin=True):
+    def get_origin_and_dest(self, rand_origin=True, rand_dest=False):
         nodes = self.g.nodes()
         origin = nodes[randint(0, len(nodes)-1)] if rand_origin else nodes[0]
-        dest = origin
-        while dest == origin:
-            dest = nodes[randint(0, len(nodes)-1)]
+        if rand_dest:
+            dest = origin
+            while dest == origin:
+                dest = nodes[randint(0, len(nodes)-1)]
+        else: dest = self.g.nodes()[-1]
         return (origin, dest)
     
     def xmit_msg(self, origin, dest):
