@@ -50,8 +50,8 @@ class OWNalgorithm(Algorithm):
 		return (p,self.trans)
 	
 	def xmit_uncertain(self, currNode, dest, path):
-		print "UNCERTAIN"
-		print currNode
+		#print "UNCERTAIN"
+		#print currNode
 		potentials=[]
 		for neighbor in self.g.neighbors(currNode):
 			self.trans+=1
@@ -61,8 +61,8 @@ class OWNalgorithm(Algorithm):
 		print potentials
 		for next_n in potentials:
 			if path.count(next_n)==0:
-				print "TAKING NEARBY OPTION"
-				print next_n
+				#print "TAKING NEARBY OPTION"
+				#print next_n
 				return self.xmit_msg_real(next_n,dest,path)
 		(p,t)=self.find_path(currNode, dest)
 		if p==None:
@@ -82,7 +82,7 @@ class OWNalgorithm(Algorithm):
 
 		#Data tx'd with control.
 		if (not pathin==None) and pathin.count(currNode)>0:
-			return self.xmit_uncertain(currNode,dest,path)
+			return self.xmit_uncertain(currNode,dest,pathin)
 		if pathin==None:
 			path=[currNode]
 		else:
