@@ -26,6 +26,9 @@ class DSRalgorithm(Algorithm):
             
     def xmit_msg(self, origin, dest):
         
+        if self.g.nodes().count(origin) == 0:
+            return (None, 0)
+        
         # Flood network if path not in table, otherwise get path from table
         if self.table.get((origin, dest), None) == None:
             (path, transmissions) = self.find_path(origin, dest) 

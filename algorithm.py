@@ -28,8 +28,8 @@ class Algorithm():
         self.ADD_PERIOD = 2
         self.RETRY_PERIOD = 1
         
-        self.DEL_PROB = .5
-        self.ADD_PROB = .5
+        self.DEL_PROB = .45
+        self.ADD_PROB = .55
         self.MAX_RETRIES = 3
         
         self.removed_nodes = {}
@@ -48,6 +48,7 @@ class Algorithm():
         """ Performs the next step of the algorithm on the MeshGraph
             @raise Exception: if the algorithm has no more steps remaining 
         """
+        new_data = {}
         self.time += 1
         [self.g.set_node_state(node, MeshGraph.PASSIVE) for node in self.g.nodes()] 
         
@@ -55,7 +56,7 @@ class Algorithm():
         if self.time % self.DEL_PERIOD == 0:
             if random() <= self.DEL_PROB:
                 nodes = self.g.nodes()
-                node = self.remove_node(nodes[randint(1, len(nodes)-2)])
+                node = self.remove_node(nodes[randint(0, len(nodes)-1)])
                 print "Deletion. Removed: %s" % (node)
 
 
@@ -68,21 +69,28 @@ class Algorithm():
                 
         if self.time % self.RETRY_PERIOD == 0:
             if len(self.retry_queue) > 0:
-                ((origin, dest), num_retries) = self.retry_queue.popleft()
-                num_retries += 1
+                ((origin, dest), data) = self.retry_queue.popleft()
+                num_tries = data['num_tries']
+                total_trans = data['trans']
+                num_tries += 1
             
-                (path, trans) = self.xmit_msg(origin, dest)
-                print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (num_retries, origin, dest, trans),
+                (path, new_trans) = self.xmit_msg(origin, dest)
+                total_trans += new_trans
+                print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (
+                        num_tries, origin, dest, total_trans),
                 
                 if path != None:
                     [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
                     print "SUCCESS"
+                    new_data[total_trans] = new_data.get(total_trans, 0) + 1
                 else:
-                    if num_retries < self.MAX_RETRIES:
-                        self.retry_queue.append(((origin, dest), num_retries))
+                    if num_tries < self.MAX_RETRIES:
+                        self.retry_queue.append(((origin, dest), {
+                                'num_tries':num_tries, 'trans':total_trans}))
                         print "FAILED"
                     else:
                         print "FAILED (no more attempts)"
+                        new_data[total_trans] = new_data.get(total_trans, 0) + 1
                         
                 
         if self.time % self.MSG_PERIOD == 0:
@@ -93,8 +101,9 @@ class Algorithm():
             if path != None:
                 [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
                 print "SUCCESS"
+                new_data[trans] = new_data.get(trans, 0) + 1
             else:
-                self.retry_queue.append(((origin, dest), 0))
+                self.retry_queue.append(((origin, dest), {'num_tries': 0, 'trans':trans}))
                 print "FAILED"
             
             
@@ -103,12 +112,19 @@ class Algorithm():
             print "Repair. Transmissions: %i" % (trans)
                 
                 
+        return new_data
+                
             
                 
                 
                 
-    def get_origin_and_dest(self):
-        return ('A1', 'E5')    
+    def get_origin_and_dest(self, rand_origin=True):
+        nodes = self.g.nodes()
+        origin = nodes[randint(0, len(nodes)-1)] if rand_origin else nodes[0]
+        dest = origin
+        while dest == origin:
+            dest = nodes[randint(0, len(nodes)-1)]
+        return (origin, dest)
     
     def xmit_msg(self, origin, dest):
         return (None, 0) 
