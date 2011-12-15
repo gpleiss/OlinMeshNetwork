@@ -12,24 +12,32 @@ from algorithm import Algorithm
 class BATMANalgorithm(Algorithm):
 	def __init__(self, g):
 		Algorithm.__init__(self, g)
+		self.REPAIR_PERIOD=20*self.MSG_PERIOD
+		self.RETRY_PERIOD=self.REPAIR_PERIOD
 		self.tables={}
+		#init tables
+		self.repair()
 
 	def xmit_msg(self, origin, dest):
 		#tables should be {A:{B:?,C:?,D:?},B:{A:?,C:?,D:?},...}
 		#that is, it is first a dict mapping a node name to its routing table:
 		#   routing table is where to go (value) to reach the destination node (key)
-		self.repair()
 		transmissions=0
 		currNode=origin
 		path=[currNode]
+		if self.tables.get(currNode)==None:
+			return (None,2*transmissions)
 		while not currNode==dest:
 			routeTable=self.tables[currNode]
 			if routeTable.get(dest)==None:
 				return (None,2*transmissions)
 			else:
-				currNode=routeTable[dest]
-				transmissions+=1
-				path.append(currNode)
+				if self.g.nodes().count(routeTable[dest])>0:
+					currNode=routeTable[dest]
+					transmissions+=1
+					path.append(currNode)
+				else:
+					return (None,2*transmissions)
 		return (path, transmissions)
 
 	def repair(self):
