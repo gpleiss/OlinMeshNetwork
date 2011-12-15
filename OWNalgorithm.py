@@ -48,7 +48,32 @@ class OWNalgorithm(Algorithm):
 		self.trans=0
 		p=self.xmit_msg_real(origin,dest)
 		return (p,self.trans)
+	
+	def xmit_uncertain(self, currNode, dest, path):
+		print "UNCERTAIN"
+		print currNode
+		potentials=[]
+		for neighbor in self.g.neighbors(currNode):
+			self.trans+=1
+			if self.tables[neighbor].keys().count(dest)>0:
+				self.trans+=1
+				potentials.append(neighbor)
+		print potentials
+		for next_n in potentials:
+			if path.count(next_n)==0:
+				print "TAKING NEARBY OPTION"
+				print next_n
+				return self.xmit_msg_real(next_n,dest,path)
+		(p,t)=self.find_path(currNode, dest)
+		if p==None:
+			return None
+		self.util_OWN_Record_Path(p)
+		self.trans+=t
+		path.pop()
+		path.extend(p)
+		return path
 		
+	
 	def xmit_msg_real(self, currNode, dest, pathin=None):
 		#basic premise: the data is flooded if there is no path.
 		#we have self.tables same as BATMAN.
@@ -57,14 +82,7 @@ class OWNalgorithm(Algorithm):
 
 		#Data tx'd with control.
 		if (not pathin==None) and pathin.count(currNode)>0:
-			(p,t)=self.find_path(currNode, dest)
-			if p==None:
-				return None
-			self.util_OWN_Record_Path(p)
-			self.trans+=t
-			path.pop()
-			path.extend(p)
-			return path
+			return self.xmit_uncertain(currNode,dest,path)
 		if pathin==None:
 			path=[currNode]
 		else:
@@ -79,15 +97,8 @@ class OWNalgorithm(Algorithm):
 			if self.g.neighbors(currNode).count(nextNode)>0:
 				#elf.trans+=1 #counts the ACK msg.
 				return self.xmit_msg_real(nextNode, dest, path)
-		#don't have a route via tables. Route via DSR.
-		(p,t)=self.find_path(currNode, dest)
-		if p==None:
-			return None
-		self.util_OWN_Record_Path(p)
-		self.trans+=t
-		path.pop()
-		path.extend(p)
-		return path
+		#don't have a route via tables. Route uncertainly.
+		return self.xmit_uncertain(currNode,dest,path)
 		
 	def util_OWN_Record_Path(self, path):
 		for i in range(len(path)):

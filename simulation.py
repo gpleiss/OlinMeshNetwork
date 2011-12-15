@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from meshgraph import MeshGraph
 from algorithm import Algorithm
 from DSRalgorithm import DSRalgorithm
+from BATMANalgorithm import BATMANalgorithm
+from OWNalgorithm import OWNalgorithm
+from GLSRalgorithm import GLSRalgorithm
 import time
     
     
@@ -67,5 +70,5 @@ class Simulation():
 
 if __name__ == '__main__':
     g = MeshGraph(n_rows=5, n_cols=5, row_dist=1, col_dist=1, max_offset=0.25)
-    s = Simulation(g, DSRalgorithm)
+    s = Simulation(g, OWNalgorithm)
     s.start()

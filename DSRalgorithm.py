@@ -61,19 +61,8 @@ class DSRalgorithm(Algorithm):
     def find_path(self, origin, dest):
         # flood the network
         transmissions=0
-        flood={origin:origin} #{A:B} A was flooded from B.
-        needsFlood={origin:True}
-        
-        while DSRalgorithm.util_DSR_Flood_Incomplete(needsFlood):
-            for node in flood.keys():
-                if needsFlood[node]==True:
-                    needsFlood[node]=False
-                    transmissions+=1
-                    for adj_node in self.g.neighbors(node):
-                        if flood.keys().count(adj_node)==0:
-                            #We need to flood adj_node
-                            flood[adj_node]=node
-                            needsFlood[adj_node]=True
+        (flood,t)=Algorithm.util_flood(self.g,origin)
+        transmissions+=t
       
         if flood.keys().count(dest)==0:
             return (None,transmissions)
@@ -87,11 +76,4 @@ class DSRalgorithm(Algorithm):
             transmissions+=1
         path.reverse()
         return (path, transmissions)
-    
-    @staticmethod
-    def util_DSR_Flood_Incomplete(needsFlood):
-        for node in needsFlood.keys():
-            if needsFlood[node]:
-                return True
-        return False
             

@@ -13,7 +13,31 @@ class Algorithm():
             running the method next_step, until there are no more 
             steps remaining (which can be determined by the method 
             has_next_step)
-    """
+    """	
+    @staticmethod
+    def util_flood(graph, origin):
+		transmissions=0
+		flood={origin:origin} #{A:B} A was flooded from B.
+		needsFlood={origin:True}
+        
+		while Algorithm.util_flood_incomplete(needsFlood):
+			for node in flood.keys():
+				if needsFlood[node]==True:
+					needsFlood[node]=False
+					transmissions+=1
+					for adj_node in graph.neighbors(node):
+						if flood.keys().count(adj_node)==0:
+							#We need to flood adj_node
+							flood[adj_node]=node
+							needsFlood[adj_node]=True
+		return (flood,transmissions)
+        
+    @staticmethod
+    def util_flood_incomplete(needsFlood):
+        for node in needsFlood.keys():
+            if needsFlood[node]:
+                return True
+        return False
     
     def __init__(self, g):
         """ Creates an instance that contains a MeshGraph for the
@@ -135,5 +159,4 @@ class Algorithm():
                 else: # Adjacent node has been removed from the graph
                     self.removed_nodes[adj_node]['adj_nodes'].append(node)
         return node
-
 
