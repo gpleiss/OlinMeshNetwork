@@ -65,7 +65,6 @@ class Simulation():
                          node_color = [Simulation.__color(node) for node in nodes]
                         )
         plt.draw()
-        time.sleep(1)
 
 
 if __name__ == '__main__':

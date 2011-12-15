@@ -25,19 +25,11 @@ class DataSimulation(simulation.Simulation):
         """
         i = 0
         max_time = 10000
-        repair_trans = 0
-        new_hist = pmf.Hist()
         
         while self.algo.has_next_step() and i < max_time:
-            (new_data, new_repair_trans) = self.algo.next_step()
-            repair_trans += new_repair_trans
-            for num_trans, num_occur in zip(new_data.keys(), new_data.values()):
-                new_hist.Incr(num_trans, num_occur)
+            num_trans = self.algo.next_step()
+            self.hist.Incr(num_trans) if num_trans != 0 else None
             i += 1
-        repair_offset = repair_trans/max_time
-        for (key, val) in zip(new_hist.GetDict().keys(), new_hist.GetDict().values()):
-            self.hist.Incr(key + repair_offset, val)
-        print repair_offset
     
     
     def plot_data(self):
@@ -51,6 +43,6 @@ class DataSimulation(simulation.Simulation):
 
 if __name__ == '__main__':
     g = MeshGraph(n_rows=5, n_cols=5, row_dist=1, col_dist=1, max_offset=0.25)
-    s = DataSimulation(g, BATMANalgorithm)
+    s = DataSimulation(g, DSRalgorithm)
     s.start()
     s.plot_data()
