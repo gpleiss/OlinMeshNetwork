@@ -50,7 +50,7 @@ class Algorithm():
         self.REPAIR_PERIOD = 5
         self.DEL_PERIOD = 2
         self.ADD_PERIOD = 2
-        self.RETRY_PERIOD = 1
+        self.RETRY_PERIOD = 10
         
         self.DEL_PROB = .45
         self.ADD_PROB = .55
