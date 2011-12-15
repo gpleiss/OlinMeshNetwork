@@ -59,14 +59,20 @@ class Algorithm():
                 print "Deletion. Removed: %s" % (node)
 
 
+        if self.time % self.ADD_PERIOD == 0:
+            n = len(self.removed_nodes.keys())
+            if n > 0 and random() <= self.ADD_PROB:
+                node = self.restore_node(self.removed_nodes.keys()[randint(0, n-1)])
+                print "Add. Added: %s" % (node)
+                
+                
         if self.time % self.RETRY_PERIOD == 0:
             if len(self.retry_queue) > 0:
                 ((origin, dest), num_retries) = self.retry_queue.popleft()
                 num_retries += 1
             
                 (path, trans) = self.xmit_msg(origin, dest)
-                print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (
-                        num_retries, origin, dest, trans),
+                print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (num_retries, origin, dest, trans),
                 
                 if path != None:
                     [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
@@ -77,19 +83,12 @@ class Algorithm():
                         print "FAILED"
                     else:
                         print "FAILED (no more attempts)"
-
-
-        if self.time % self.ADD_PERIOD == 0:
-            n = len(self.removed_nodes.keys())
-            if n > 0 and random() <= self.ADD_PROB:
-                node = self.restore_node(self.removed_nodes.keys()[randint(0, n-1)])
-                print "Add. Added: %s" % (node)
+                        
                 
-                if self.time % self.MSG_PERIOD == 0:
+        if self.time % self.MSG_PERIOD == 0:
             (origin, dest) = self.get_origin_and_dest()
             (path, trans) = self.xmit_msg(origin, dest)
-            print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (
-                    origin, dest, trans),
+            print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (origin, dest, trans),
             
             if path != None:
                 [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
