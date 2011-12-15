@@ -51,26 +51,7 @@ class Algorithm():
         self.time += 1
         [self.g.set_node_state(node, MeshGraph.PASSIVE) for node in self.g.nodes()] 
         
-        
-        if self.time % self.MSG_PERIOD == 0:
-            (origin, dest) = self.get_origin_and_dest()
-            (path, trans) = self.xmit_msg(origin, dest)
-            print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (
-                    origin, dest, trans),
-            
-            if path != None:
-                [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
-                print "SUCCESS"
-            else:
-                self.retry_queue.append(((origin, dest), 0))
-                print "FAILED"
-            
-            
-        if self.time % self.REPAIR_PERIOD == 0:
-            trans = self.repair()
-            print "Repair. Transmissions: %i" % (trans)
-        
-        
+                
         if self.time % self.DEL_PERIOD == 0:
             if random() <= self.DEL_PROB:
                 nodes = self.g.nodes()
@@ -78,13 +59,6 @@ class Algorithm():
                 print "Deletion. Removed: %s" % (node)
 
 
-        if self.time % self.ADD_PERIOD == 0:
-            n = len(self.removed_nodes.keys())
-            if n > 0 and random() <= self.ADD_PROB:
-                node = self.restore_node(self.removed_nodes.keys()[randint(0, n-1)])
-                print "Add. Added: %s" % (node)
-                
-                
         if self.time % self.RETRY_PERIOD == 0:
             if len(self.retry_queue) > 0:
                 ((origin, dest), num_retries) = self.retry_queue.popleft()
@@ -103,6 +77,32 @@ class Algorithm():
                         print "FAILED"
                     else:
                         print "FAILED (no more attempts)"
+
+
+        if self.time % self.ADD_PERIOD == 0:
+            n = len(self.removed_nodes.keys())
+            if n > 0 and random() <= self.ADD_PROB:
+                node = self.restore_node(self.removed_nodes.keys()[randint(0, n-1)])
+                print "Add. Added: %s" % (node)
+                
+                if self.time % self.MSG_PERIOD == 0:
+            (origin, dest) = self.get_origin_and_dest()
+            (path, trans) = self.xmit_msg(origin, dest)
+            print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (
+                    origin, dest, trans),
+            
+            if path != None:
+                [self.g.set_node_state(node, MeshGraph.ONPATH) for node in path]
+                print "SUCCESS"
+            else:
+                self.retry_queue.append(((origin, dest), 0))
+                print "FAILED"
+            
+            
+        if self.time % self.REPAIR_PERIOD == 0:
+            trans = self.repair()
+            print "Repair. Transmissions: %i" % (trans)
+                
                 
             
                 
