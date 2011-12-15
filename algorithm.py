@@ -99,7 +99,10 @@ class Algorithm():
                 total_trans = data['trans']
                 num_tries += 1
             
-                (path, new_trans) = self.xmit_msg(origin, dest)
+                if self.g.nodes().count(origin) == 0:
+                    (path, new_trans) = (None, 0)
+                else:
+                    (path, new_trans) = self.xmit_msg(origin, dest)
                 total_trans += new_trans
                 print "Retry #%i. Origin: %s, Dest: %s, Transmissions: %i" % (
                         num_tries, origin, dest, total_trans),
@@ -119,10 +122,10 @@ class Algorithm():
                         
                 
         if self.time % self.MSG_PERIOD == 0:
+            (origin, dest) = self.get_origin_and_dest()
             if self.g.nodes().count(origin) == 0:
                 (path, trans) = (None, 0)
             else:
-                (origin, dest) = self.get_origin_and_dest()
                 (path, trans) = self.xmit_msg(origin, dest)
             print "Message. Origin: %s, Dest: %s, Transmissions: %i" % (origin, dest, trans),
             

@@ -7,6 +7,10 @@ import simulation, pmf, cdf
 import matplotlib.pyplot as plt
 from meshgraph import MeshGraph
 from DSRalgorithm import DSRalgorithm
+from BATMANalgorithm import BATMANalgorithm
+from OWNalgorithm import OWNalgorithm
+from GLSRalgorithm import GLSRalgorithm
+
 
 class DataSimulation(simulation.Simulation):
     
@@ -47,6 +51,6 @@ class DataSimulation(simulation.Simulation):
 
 if __name__ == '__main__':
     g = MeshGraph(n_rows=5, n_cols=5, row_dist=1, col_dist=1, max_offset=0.25)
-    s = DataSimulation(g, DSRalgorithm)
+    s = DataSimulation(g, BATMANalgorithm)
     s.start()
     s.plot_data()
