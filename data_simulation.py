@@ -24,7 +24,7 @@ class DataSimulation(simulation.Simulation):
             @return: True if the simulation runs successfully
         """
         i = 0
-        max_time = 10000
+        max_time = 25000
         
         while self.algo.has_next_step() and i < max_time:
             num_trans = self.algo.next_step()
